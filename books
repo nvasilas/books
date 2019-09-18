@@ -1,0 +1,13 @@
+#!/usr/bin/env python3
+
+from books import Books
+
+# Set BOOKS_DIR
+if Books.on_wsl():
+    # work
+    BOOKS_DIR = r'/home/nvasilas/docs/books'
+else:
+    # home
+    BOOKS_DIR = '/home/nikos/docs/books'
+
+Books(BOOKS_DIR).run()
