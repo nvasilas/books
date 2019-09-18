@@ -5,7 +5,7 @@ from books import Books
 # Set PAPERS_DIR
 if Books.on_wsl():
     # work
-    PAPERS_DIR = r'/home/nvasilas/docs/papers'
+    PAPERS_DIR = '/home/nvasilas/docs/papers'
 else:
     # home
     PAPERS_DIR = '/home/nikos/docs/papers'

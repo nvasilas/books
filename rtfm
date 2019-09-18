@@ -5,7 +5,7 @@ from books import Rtfm
 # Set RTFM_DIR
 if Rtfm.on_wsl():
     # work
-    RTFM_DIR = r'/home/nvasilas/docs/rtfm'
+    RTFM_DIR = '/home/nvasilas/docs/rtfm'
 else:
     # home
     RTFM_DIR = '/home/nikos/docs/rtfm'
