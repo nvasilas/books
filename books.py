@@ -4,16 +4,10 @@ import sys
 import shutil
 import subprocess
 from pathlib import Path
-# from dataclasses import dataclass
 from textwrap import wrap
 from platform import uname
 
 
-# @dataclass
-# class _NamePath:
-#     name: str
-#     path: str
-#     authors: list = None
 class _NamePath:
     def __init__(self, name, path, authors=None):
         self.name = name
@@ -31,7 +25,6 @@ class Books:
     def __init__(self, directory):
         self.directory = Path(directory)
         self.key = self.parse_key()
-        # TODO use search_term
         self.search_term = self.parse_search_term()
 
         self._max_key = self._max_num = 0
@@ -45,14 +38,14 @@ class Books:
         if len(sys.argv) >= 2:
             return sys.argv[1]
         else:
-            return None
+            return ''
 
     @staticmethod
     def parse_search_term():
         if len(sys.argv) >= 3:
             return sys.argv[2]
         else:
-            return None
+            return ''
 
     @staticmethod
     def on_wsl():
@@ -82,9 +75,11 @@ class Books:
         ext = {'.pdf', '.djvu', '.epub'}
         return f.suffix.lower() in ext
 
-    def _files(self, _dir):
+    def _files(self, _dir, _search_term=''):
         return (i for i in _dir.iterdir()
-                if i.is_file() and self.is_doc(i))
+                if i.is_file()
+                and self.is_doc(i)
+                and _search_term in str(i.stem).lower())
 
     def get_root_dict(self):
         _key_dict = {}
@@ -99,9 +94,10 @@ class Books:
             _key_dict[key] = _NamePath(name=name, path=path)
         return _key_dict
 
-    def get_folder_dict(self, _dir):
+    def get_folder_dict(self, _dir, _search_term=''):
         _folder_dict = {}
-        for number, _file in enumerate(self._files(_dir), start=1):
+        for number, _file in enumerate(self._files(_dir, _search_term),
+                                       start=1):
             try:
                 _authors, _name = str(_file.stem).split(self.SPLIT_MARK)
             except ValueError:
@@ -170,6 +166,11 @@ class Books:
         _msg = f'{_str}: wrong directory key "{self.key}", directory keys:'
         print(_msg)
 
+    def search_term_no_match(self):
+        _str = self.__str__()
+        _msg = f'{_str}: found no match for "{self.search_term}", files found:'
+        print(_msg)
+
     @staticmethod
     def _to_win_format(f):
         if f.startswith('.'):
@@ -194,7 +195,10 @@ class Books:
     def run(self):
         if self.key in self.root_dict:
             _dir = self.root_dict[self.key].path
-            folder_dict = self.get_folder_dict(_dir)
+            folder_dict = self.get_folder_dict(_dir, self.search_term)
+            if not folder_dict:
+                self.search_term_no_match()
+                folder_dict = self.get_folder_dict(_dir)
             self.print_folder(folder_dict)
             key = self.get_key(folder_dict)
             if not key:
@@ -215,13 +219,15 @@ class Books:
 class Rtfm(Books):
     def __init__(self, directory):
         super().__init__(directory)
+        self.search_term = self.key
 
     def __str__(self):
         return 'rtfm'
 
-    def get_folder_dict(self, _dir):
+    def get_folder_dict(self, _dir, _search_term=''):
         _folder_dict = {}
-        for number, _file in enumerate(self._files(_dir), start=1):
+        for number, _file in enumerate(self._files(_dir, _search_term),
+                                       start=1):
             _name = str(_file.stem)
             self._max_num = max(self._max_num, len(str(number)))
             name = _name.replace('_', ' ')
@@ -250,7 +256,10 @@ class Rtfm(Books):
             print(f'{_}')
 
     def run(self):
-        folder_dict = self.get_folder_dict(self.directory)
+        folder_dict = self.get_folder_dict(self.directory, self.search_term)
+        if not folder_dict:
+            self.search_term_no_match()
+            folder_dict = self.get_folder_dict(self.directory)
         self.print_folder(folder_dict)
         key = self.get_key(folder_dict)
         if not key:
@@ -267,5 +276,5 @@ if __name__ == '__main__':
         p = '/home/nikos/docs/papers'
         r = '/home/nikos/docs/rtfm'
     # Books(b).run()
-    Books(p).run()
-    # Rtfm(r).run()
+    # Books(p).run()
+    Rtfm(r).run()
