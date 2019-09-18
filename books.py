@@ -8,6 +8,69 @@ from textwrap import wrap
 from platform import uname
 
 
+def on_wsl():
+    return "microsoft" in uname()[3].lower()
+
+def on_windows():
+    return os.name == 'nt'
+
+
+class Config:
+    """Configuration class for Books.
+
+    Attributes:
+
+        Set the following:
+
+        BOOKS_DICT (dict): Set this dict with the location of the books.
+        PAPERS_DICT (dict): Set this dict with the location of the papers.
+        RTFM_DICT (dict): Set this dict with the location of the rtfm.
+
+        Do not set the following:
+
+        _WSL (str): internal represantaion of dict key, do not edit.
+        _WIN (str): internal represantaion of dict key, do not edit.
+        _LINUX (str): internal represantaion of dict key, do not edit.
+
+    """
+
+    _WSL = 'wsl'
+    _WIN = 'win'
+    _LINUX = 'linux'
+
+    BOOKS_DICT = {
+        _WSL: '/home/nvasilas/docs/books',
+        _LINUX: '/home/nikos/docs/books',
+        # _WIN: '/home/nikos/docs/books',
+    }
+
+    PAPERS_DICT = {
+        _WSL: '/home/nvasilas/docs/papers',
+        _LINUX: '/home/nikos/docs/papers',
+        # _WIN: '/home/nikos/docs/books',
+    }
+
+    RTFM_DICT = {
+        _WSL: '/home/nvasilas/docs/rtfm',
+        _LINUX: '/home/nikos/docs/rtfm',
+        # _WIN: '/home/nikos/docs/books',
+    }
+
+    def __init__(self):
+        _key = self._get_os()
+        self.books_dir = self.BOOKS_DICT[_key]
+        self.papers_dir = self.PAPERS_DICT[_key]
+        self.rtfm_dir = self.RTFM_DICT[_key]
+
+    def _get_os(self):
+        if on_wsl():
+            return self._WSL
+        elif on_windows():
+            return self._WIN
+        else:
+            return self._LINUX
+
+
 class _NamePath:
     def __init__(self, name, path, authors=None):
         self.name = name
@@ -46,10 +109,6 @@ class Books:
             return sys.argv[2]
         else:
             return ''
-
-    @staticmethod
-    def on_wsl():
-        return "microsoft" in uname()[3].lower()
 
     @property
     def directory(self):
@@ -178,7 +237,7 @@ class Books:
         return f.replace(os.sep, '\\')
 
     def _open(self, _file):
-        if self.on_wsl():
+        if on_wsl():
             _file = _file.relative_to(*_file.parts[:3])
             file_to_open = (self._WIN_PROJECT
                             + '\\'

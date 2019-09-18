@@ -1,13 +1,6 @@
 #!/usr/bin/env python3
 
-from books import Rtfm
+from books import Rtfm, Config
 
-# Set RTFM_DIR
-if Rtfm.on_wsl():
-    # work
-    RTFM_DIR = '/home/nvasilas/docs/rtfm'
-else:
-    # home
-    RTFM_DIR = '/home/nikos/docs/rtfm'
 
-Rtfm(RTFM_DIR).run()
+Rtfm(Config().rtfm_dir).run()

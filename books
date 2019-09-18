@@ -1,13 +1,5 @@
 #!/usr/bin/env python3
 
-from books import Books
+from books import Books, Config
 
-# Set BOOKS_DIR
-if Books.on_wsl():
-    # work
-    BOOKS_DIR = '/home/nvasilas/docs/books'
-else:
-    # home
-    BOOKS_DIR = '/home/nikos/docs/books'
-
-Books(BOOKS_DIR).run()
+Books(Config().books_dir).run()

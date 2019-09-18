@@ -1,14 +1,5 @@
 #!/usr/bin/env python3
 
-from books import Books
+from books import Books, Config
 
-# Set PAPERS_DIR
-if Books.on_wsl():
-    # work
-    PAPERS_DIR = '/home/nvasilas/docs/papers'
-else:
-    # home
-    PAPERS_DIR = '/home/nikos/docs/papers'
-
-
-Books(PAPERS_DIR).run()
+Books(Config().papers_dir).run()
