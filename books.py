@@ -91,7 +91,6 @@ class Books:
         self.search_term = self.parse_search_term()
 
         self._max_key = self._max_num = 0
-        self.root_dict = self.get_root_dict()
 
     def __str__(self):
         return 'books'
@@ -147,6 +146,7 @@ class Books:
                 _name, key = str(d).split(self.SPLIT_MARK)
             except ValueError:
                 print(f'Fix directory {d} to match split pattern')
+                continue
             self._max_key = max(self._max_key, len(key))
             name = Path(_name).stem.replace('_', ' ')
             path = d.absolute()
@@ -184,8 +184,8 @@ class Books:
                 if authors else
                 'NO_AUTHOR.')
 
-    def print_root(self):
-        for k, v in self.root_dict.items():
+    def print_root(self, root_dict):
+        for k, v in root_dict.items():
             _spaces = ' '*self._get_spaces_key(k)
             print(f'({k}) {_spaces} {v.name}')
 
@@ -252,8 +252,9 @@ class Books:
             subprocess.Popen(cmd, shell=True)
 
     def run(self):
-        if self.key in self.root_dict:
-            _dir = self.root_dict[self.key].path
+        root_dict = self.get_root_dict()
+        if self.key in root_dict:
+            _dir = root_dict[self.key].path
             folder_dict = self.get_folder_dict(_dir, self.search_term)
             if not folder_dict:
                 self.search_term_no_match()
@@ -266,8 +267,8 @@ class Books:
             self._open(_file)
         else:
             self.key_not_found()
-            self.print_root()
-            key = self.get_key(self.root_dict)
+            self.print_root(root_dict)
+            key = self.get_key(root_dict)
             if not key:
                 return
             else:
