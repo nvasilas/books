@@ -2,4 +2,6 @@
 
 from books import Books, Config
 
-Books(Config().papers_dir).run()
+config = Config()
+
+Books(config.papers_dir, config.open_pdf_settings).run()

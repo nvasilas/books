@@ -34,6 +34,9 @@ class Config:
 
     """
 
+    _XDG_OPEN = 'xdg-open'
+    _WIN_PROJECT = 'C:\\Users\\nvasilas\\Documents\\MEGA'
+
     _WSL = 'wsl'
     _WIN = 'win'
     _LINUX = 'linux'
@@ -62,6 +65,8 @@ class Config:
         self.papers_dir = self.PAPERS_DICT[_key]
         self.rtfm_dir = self.RTFM_DICT[_key]
 
+        self.open_pdf_settings = (self._XDG_OPEN, self._WIN_PROJECT)
+
     def _get_os(self):
         if on_wsl():
             return self._WSL
@@ -79,18 +84,17 @@ class _NamePath:
 
 
 class Books:
-    _XDG_OPEN = 'xdg-open'
-    _WIN_PROJECT = 'C:\\Users\\nvasilas\\Documents\\MEGA'
-
     SPLIT_MARK = '__'
     TEXT_WRAP = 80
 
-    def __init__(self, directory):
+    def __init__(self, directory, open_pdf_settings):
         self.directory = Path(directory)
         self.key = self.parse_key()
         self.search_term = self.parse_search_term()
 
         self._max_key = self._max_num = 0
+
+        self._XDG_OPEN, self._WIN_PROJECT = open_pdf_settings
 
     def __str__(self):
         return 'books'
@@ -277,8 +281,8 @@ class Books:
 
 
 class Rtfm(Books):
-    def __init__(self, directory):
-        super().__init__(directory)
+    def __init__(self, directory, open_pdf_settings):
+        super().__init__(directory, open_pdf_settings)
         self.search_term = self.key
 
     def __str__(self):
