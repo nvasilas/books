@@ -26,6 +26,9 @@ class Config:
         PAPERS_DICT (dict): Set this dict with the location of the papers.
         RTFM_DICT (dict): Set this dict with the location of the rtfm.
 
+        _XDG_OPEN (str): Linux open command, set only when on linux.
+        _WIN_PROJECT (str): Books root directory, set only when on wsl.
+
         Do not set the following:
 
         _WSL (str): internal represantaion of dict key, do not edit.
