@@ -26,8 +26,8 @@ class Config:
         PAPERS_DICT (dict): Set this dict with the location of the papers.
         RTFM_DICT (dict): Set this dict with the location of the rtfm.
 
-        _XDG_OPEN (str): Linux open command, set only when on linux.
-        _WIN_PROJECT (str): Books root directory, set only when on wsl.
+        XDG_OPEN (str): Linux open command, set only when on linux.
+        WIN_PROJECT (str): Books root directory, set only when on wsl.
 
         Do not set the following:
 
@@ -37,8 +37,8 @@ class Config:
 
     """
 
-    _XDG_OPEN = 'xdg-open'
-    _WIN_PROJECT = 'C:\\Users\\nvasilas\\Documents\\MEGA'
+    XDG_OPEN = 'xdg-open'
+    WIN_PROJECT = 'C:\\Users\\nvasilas\\Documents\\MEGA'
 
     _WSL = 'wsl'
     _WIN = 'win'
@@ -47,19 +47,19 @@ class Config:
     BOOKS_DICT = {
         _WSL: '/home/nvasilas/docs/books',
         _LINUX: '/home/nikos/docs/books',
-        # _WIN: '/home/nikos/docs/books',
+        _WIN: 'C:\\Users\\nvasilas\\Documents\\MEGA\\docs\\books'
     }
 
     PAPERS_DICT = {
         _WSL: '/home/nvasilas/docs/papers',
         _LINUX: '/home/nikos/docs/papers',
-        # _WIN: '/home/nikos/docs/books',
+        _WIN: 'C:\\Users\\nvasilas\\Documents\\MEGA\\docs\\papers'
     }
 
     RTFM_DICT = {
         _WSL: '/home/nvasilas/docs/rtfm',
         _LINUX: '/home/nikos/docs/rtfm',
-        # _WIN: '/home/nikos/docs/books',
+        _WIN: 'C:\\Users\\nvasilas\\Documents\\MEGA\\docs\\rtfm'
     }
 
     def __init__(self):
@@ -67,8 +67,6 @@ class Config:
         self.books_dir = self.BOOKS_DICT[_key]
         self.papers_dir = self.PAPERS_DICT[_key]
         self.rtfm_dir = self.RTFM_DICT[_key]
-
-        self.open_pdf_settings = (self._XDG_OPEN, self._WIN_PROJECT)
 
     def _get_os(self):
         if on_wsl():
@@ -90,14 +88,15 @@ class Books:
     SPLIT_MARK = '__'
     TEXT_WRAP = 80
 
-    def __init__(self, directory, open_pdf_settings):
+    def __init__(self, directory, config):
         self.directory = Path(directory)
         self.key = self.parse_key()
         self.search_term = self.parse_search_term()
 
         self._max_key = self._max_num = 0
 
-        self._XDG_OPEN, self._WIN_PROJECT = open_pdf_settings
+        self.XDG_OPEN = config.XDG_OPEN
+        self.WIN_PROJECT = config.WIN_PROJECT
 
     def __str__(self):
         return 'books'
@@ -246,16 +245,16 @@ class Books:
     def _open(self, _file):
         if on_wsl():
             _file = _file.relative_to(*_file.parts[:3])
-            file_to_open = (self._WIN_PROJECT
+            file_to_open = (self.WIN_PROJECT
                             + '\\'
                             + self._to_win_format(str(_file)))
             subprocess.Popen(["cmd.exe /c '%s'" % file_to_open], shell=True)
         elif os.name == 'nt':
             subprocess.Popen([str(_file)], shell=True)
         else:
-            if shutil.which(self._XDG_OPEN) is None:
-                raise OSError(f'not found executable {self._XDG_OPEN}')
-            cmd = ' '.join([self._XDG_OPEN, str(_file)])
+            if shutil.which(self.XDG_OPEN) is None:
+                raise OSError(f'not found executable {self.XDG_OPEN}')
+            cmd = ' '.join([self.XDG_OPEN, str(_file)])
             subprocess.Popen(cmd, shell=True)
 
     def run(self):
@@ -336,12 +335,7 @@ class Rtfm(Books):
 
 
 if __name__ == '__main__':
-    if os.name == 'nt':
-        b = r'C:\Users\nvasilas\Documents\MEGA\docs\books\topology__topo'
-    else:
-        b = '/home/nikos/docs/books'
-        p = '/home/nikos/docs/papers'
-        r = '/home/nikos/docs/rtfm'
-    # Books(b).run()
-    # Books(p).run()
-    Rtfm(r).run()
+    config = Config()
+    Books(config.books_dir, config).run()
+    # Books(config.papers_dir, config).run()
+    # Rtfm(config.rtfm_dir, config).run()

@@ -4,4 +4,4 @@ from books import Books, Config
 
 config = Config()
 
-Books(config.books_dir, config.open_pdf_settings).run()
+Books(config.books_dir, config).run()

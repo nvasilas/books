@@ -4,4 +4,4 @@ from books import Rtfm, Config
 
 config = Config()
 
-Rtfm(config.rtfm_dir, config.open_pdf_settings).run()
+Rtfm(config.rtfm_dir, config).run()
