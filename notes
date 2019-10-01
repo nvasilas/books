@@ -1,0 +1,7 @@
+#!/usr/bin/env python3
+
+from books import Notes, Config
+
+config = Config()
+
+Notes(config.notes_dir, config).run()

@@ -62,11 +62,18 @@ class Config:
         _WIN: 'C:\\Users\\nvasilas\\Documents\\MEGA\\docs\\rtfm'
     }
 
+    NOTES_DICT = {
+        _WSL: '/home/nvasilas/docs/notes',
+        _LINUX: '/home/nikos/docs/notes',
+        _WIN: 'C:\\Users\\nvasilas\\Documents\\MEGA\\docs\\notes'
+    }
+
     def __init__(self):
         _key = self._get_os()
         self.books_dir = self.BOOKS_DICT[_key]
         self.papers_dir = self.PAPERS_DICT[_key]
         self.rtfm_dir = self.RTFM_DICT[_key]
+        self.notes_dir = self.NOTES_DICT[_key]
 
     def _get_os(self):
         if on_wsl():
@@ -332,6 +339,11 @@ class Rtfm(Books):
             return
         _file = folder_dict[key].path
         self._open(_file)
+
+
+class Notes(Rtfm):
+    def __str__(self):
+        return 'notes'
 
 
 if __name__ == '__main__':
