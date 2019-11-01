@@ -46,25 +46,25 @@ class Config:
 
     BOOKS_DICT = {
         _WSL: '/home/nvasilas/docs/books',
-        _LINUX: '/home/nikos/docs/books',
+        _LINUX: os.path.join(os.path.expanduser('~'), 'docs/books'),
         _WIN: 'C:\\Users\\nvasilas\\Documents\\MEGA\\docs\\books'
     }
 
     PAPERS_DICT = {
         _WSL: '/home/nvasilas/docs/papers',
-        _LINUX: '/home/nikos/docs/papers',
+        _LINUX: os.path.join(os.path.expanduser('~'), 'docs/papers'),
         _WIN: 'C:\\Users\\nvasilas\\Documents\\MEGA\\docs\\papers'
     }
 
     RTFM_DICT = {
         _WSL: '/home/nvasilas/docs/rtfm',
-        _LINUX: '/home/nikos/docs/rtfm',
+        _LINUX: os.path.join(os.path.expanduser('~'), 'docs/rtfm'),
         _WIN: 'C:\\Users\\nvasilas\\Documents\\MEGA\\docs\\rtfm'
     }
 
     NOTES_DICT = {
         _WSL: '/home/nvasilas/docs/notes',
-        _LINUX: '/home/nikos/docs/notes',
+        _LINUX: os.path.join(os.path.expanduser('~'), 'docs/notes'),
         _WIN: 'C:\\Users\\nvasilas\\Documents\\MEGA\\docs\\notes'
     }
 
