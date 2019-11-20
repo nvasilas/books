@@ -93,7 +93,7 @@ class _NamePath:
 
 class Books:
     SPLIT_MARK = '__'
-    TEXT_WRAP = 80
+    TEXT_WRAP = 70
 
     def __init__(self, directory, config):
         self.directory = Path(directory)
