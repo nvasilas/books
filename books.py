@@ -227,11 +227,14 @@ class Books:
         _str = self.__str__()
         _msg = f"{_str}: type {_str} (id) to preview | 'q' to return\n"
         while True:
-            val = input(_msg)
-            if val == 'q':
-                return None
-            elif val in _dict:
-                return val
+            try:
+                val = input(_msg)
+                if val == 'q':
+                    return None
+                elif val in _dict:
+                    return val
+            except KeyboardInterrupt:
+                    sys.exit(0)
 
     def key_not_found(self):
         _str = self.__str__()
