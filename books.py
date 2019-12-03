@@ -143,7 +143,7 @@ class Books:
 
     @staticmethod
     def is_doc(f):
-        ext = {'.pdf', '.djvu', '.epub'}
+        ext = {'.pdf', '.djvu', '.epub', '.ps'}
         return f.suffix.lower() in ext
 
     def _files(self, _dir, _search_term=''):
