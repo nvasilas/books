@@ -11,6 +11,7 @@ from platform import uname
 def on_wsl():
     return "microsoft" in uname()[3].lower()
 
+
 def on_windows():
     return os.name == 'nt'
 
@@ -27,7 +28,7 @@ class Config:
         RTFM_DICT (dict): Set this dict with the location of the rtfm.
 
         XDG_OPEN (str): Linux open command, set only when on linux.
-        WIN_PROJECT (str): Books root directory, set only when on wsl.
+        WSL_OPEN (str): wsl-open external command, set only when on wsl.
 
         Do not set the following:
 
@@ -38,34 +39,36 @@ class Config:
     """
 
     XDG_OPEN = 'xdg-open'
-    WIN_PROJECT = 'C:\\Users\\nvasilas\\Documents\\MEGA'
+    WSL_OPEN = 'wsl-open'
 
     _WSL = 'wsl'
     _WIN = 'win'
     _LINUX = 'linux'
 
+    _userhome = os.path.expanduser('~')
+    _username = os.path.split(_userhome)[-1]
     BOOKS_DICT = {
-        _WSL: '/home/nvasilas/docs/books',
-        _LINUX: os.path.join(os.path.expanduser('~'), 'docs/books'),
-        _WIN: 'C:\\Users\\nvasilas\\Documents\\MEGA\\docs\\books'
+        _WSL: os.path.join(_userhome, 'docs/books'),
+        _LINUX: os.path.join(_userhome, 'docs/books'),
+        _WIN: f'C:\\Users\\{_username}\\Documents\\MEGA\\docs\\books'
     }
 
     PAPERS_DICT = {
-        _WSL: '/home/nvasilas/docs/papers',
-        _LINUX: os.path.join(os.path.expanduser('~'), 'docs/papers'),
-        _WIN: 'C:\\Users\\nvasilas\\Documents\\MEGA\\docs\\papers'
+        _WSL: os.path.join(_userhome, 'docs/papers'),
+        _LINUX: os.path.join(_userhome, 'docs/papers'),
+        _WIN: f'C:\\Users\\{_username}\\Documents\\MEGA\\docs\\papers'
     }
 
     RTFM_DICT = {
-        _WSL: '/home/nvasilas/docs/rtfm',
-        _LINUX: os.path.join(os.path.expanduser('~'), 'docs/rtfm'),
-        _WIN: 'C:\\Users\\nvasilas\\Documents\\MEGA\\docs\\rtfm'
+        _WSL: os.path.join(_userhome, 'docs/rtfm'),
+        _LINUX: os.path.join(_userhome, 'docs/rtfm'),
+        _WIN: f'C:\\Users\\{_username}\\Documents\\MEGA\\docs\\rtfm'
     }
 
     NOTES_DICT = {
-        _WSL: '/home/nvasilas/docs/notes',
-        _LINUX: os.path.join(os.path.expanduser('~'), 'docs/notes'),
-        _WIN: 'C:\\Users\\nvasilas\\Documents\\MEGA\\docs\\notes'
+        _WSL: os.path.join(_userhome, 'docs/notes'),
+        _LINUX: os.path.join(_userhome, 'docs/notes'),
+        _WIN: f'C:\\Users\\{_username}\\Documents\\MEGA\\docs\\notes'
     }
 
     def __init__(self):
@@ -103,7 +106,7 @@ class Books:
         self._max_key = self._max_num = 0
 
         self.XDG_OPEN = config.XDG_OPEN
-        self.WIN_PROJECT = config.WIN_PROJECT
+        self.WSL_OPEN = config.WSL_OPEN
 
     def __str__(self):
         return 'books'
@@ -246,20 +249,13 @@ class Books:
         _msg = f'{_str}: found no match for "{self.search_term}", files found:'
         print(_msg)
 
-    @staticmethod
-    def _to_win_format(f):
-        if f.startswith('.'):
-            f = f[1:]
-        return f.replace(os.sep, '\\')
-
     def _open(self, _file):
         if on_wsl():
-            _file = _file.relative_to(*_file.parts[:3])
-            file_to_open = (self.WIN_PROJECT
-                            + '\\'
-                            + self._to_win_format(str(_file)))
-            subprocess.Popen(["cmd.exe /c '%s'" % file_to_open], shell=True)
-        elif os.name == 'nt':
+            if shutil.which(self.WSL_OPEN) is None:
+                raise OSError(f'not found executable {self.WSL_OPEN}')
+            cmd = ' '.join([self.WSL_OPEN, str(_file)])
+            subprocess.Popen(cmd, shell=True)
+        elif on_windows():
             subprocess.Popen([str(_file)], shell=True)
         else:
             if shutil.which(self.XDG_OPEN) is None:
