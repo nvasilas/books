@@ -45,30 +45,32 @@ class Config:
     _WIN = 'win'
     _LINUX = 'linux'
 
-    _userhome = os.path.expanduser('~')
-    _username = os.path.split(_userhome)[-1]
+    _WSL_ROOT = Path().home() / 'docs'
+    _LINUX_ROOT = _WSL_ROOT
+    _WIN_ROOT = Path().home() / 'Documents' / 'MEGA' / 'docs'
+
     BOOKS_DICT = {
-        _WSL: os.path.join(_userhome, 'docs/books'),
-        _LINUX: os.path.join(_userhome, 'docs/books'),
-        _WIN: f'C:\\Users\\{_username}\\Documents\\MEGA\\docs\\books'
+        _WSL: _WSL_ROOT / 'books',
+        _LINUX: _LINUX_ROOT / 'books',
+        _WIN: _WIN_ROOT / 'books'
     }
 
     PAPERS_DICT = {
-        _WSL: os.path.join(_userhome, 'docs/papers'),
-        _LINUX: os.path.join(_userhome, 'docs/papers'),
-        _WIN: f'C:\\Users\\{_username}\\Documents\\MEGA\\docs\\papers'
+        _WSL: _WSL_ROOT / 'papers',
+        _LINUX: _LINUX_ROOT / 'papers',
+        _WIN: _WIN_ROOT / 'papers'
     }
 
     RTFM_DICT = {
-        _WSL: os.path.join(_userhome, 'docs/rtfm'),
-        _LINUX: os.path.join(_userhome, 'docs/rtfm'),
-        _WIN: f'C:\\Users\\{_username}\\Documents\\MEGA\\docs\\rtfm'
+        _WSL: _WSL_ROOT / 'rtfm',
+        _LINUX: _LINUX_ROOT / 'rtfm',
+        _WIN: _WIN_ROOT / 'rtfm'
     }
 
     NOTES_DICT = {
-        _WSL: os.path.join(_userhome, 'docs/notes'),
-        _LINUX: os.path.join(_userhome, 'docs/notes'),
-        _WIN: f'C:\\Users\\{_username}\\Documents\\MEGA\\docs\\notes'
+        _WSL: _WSL_ROOT / 'notes',
+        _LINUX: _LINUX_ROOT / 'notes',
+        _WIN: _WIN_ROOT / 'notes'
     }
 
     def __init__(self):
@@ -99,7 +101,7 @@ class Books:
     TEXT_WRAP = 70
 
     def __init__(self, directory, config):
-        self.directory = Path(directory)
+        self.directory = directory
         self.key = self.parse_key()
         self.search_term = self.parse_search_term()
 
