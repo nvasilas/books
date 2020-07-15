@@ -8,87 +8,6 @@ from textwrap import wrap
 from platform import uname
 
 
-def on_wsl():
-    return "microsoft" in uname()[3].lower()
-
-
-def on_windows():
-    return os.name == 'nt'
-
-
-class Config:
-    """Configuration class for Books.
-
-    Attributes:
-
-        Set the following:
-
-        BOOKS_DICT (dict): Set this dict with the location of the books.
-        PAPERS_DICT (dict): Set this dict with the location of the papers.
-        RTFM_DICT (dict): Set this dict with the location of the rtfm.
-
-        XDG_OPEN (str): Linux open command, set only when on linux.
-        WSL_OPEN (str): wsl-open external command, set only when on wsl.
-
-        Do not set the following:
-
-        _WSL (str): internal represantaion of dict key, do not edit.
-        _WIN (str): internal represantaion of dict key, do not edit.
-        _LINUX (str): internal represantaion of dict key, do not edit.
-
-    """
-
-    XDG_OPEN = 'xdg-open'
-    WSL_OPEN = 'wsl-open'
-
-    _WSL = 'wsl'
-    _WIN = 'win'
-    _LINUX = 'linux'
-
-    _WSL_ROOT = Path().home() / 'docs'
-    _LINUX_ROOT = _WSL_ROOT
-    _WIN_ROOT = Path().home() / 'Documents' / 'MEGA' / 'docs'
-
-    BOOKS_DICT = {
-        _WSL: _WSL_ROOT / 'books',
-        _LINUX: _LINUX_ROOT / 'books',
-        _WIN: _WIN_ROOT / 'books'
-    }
-
-    PAPERS_DICT = {
-        _WSL: _WSL_ROOT / 'papers',
-        _LINUX: _LINUX_ROOT / 'papers',
-        _WIN: _WIN_ROOT / 'papers'
-    }
-
-    RTFM_DICT = {
-        _WSL: _WSL_ROOT / 'rtfm',
-        _LINUX: _LINUX_ROOT / 'rtfm',
-        _WIN: _WIN_ROOT / 'rtfm'
-    }
-
-    NOTES_DICT = {
-        _WSL: _WSL_ROOT / 'notes',
-        _LINUX: _LINUX_ROOT / 'notes',
-        _WIN: _WIN_ROOT / 'notes'
-    }
-
-    def __init__(self):
-        _key = self._get_os()
-        self.books_dir = self.BOOKS_DICT[_key]
-        self.papers_dir = self.PAPERS_DICT[_key]
-        self.rtfm_dir = self.RTFM_DICT[_key]
-        self.notes_dir = self.NOTES_DICT[_key]
-
-    def _get_os(self):
-        if on_wsl():
-            return self._WSL
-        elif on_windows():
-            return self._WIN
-        else:
-            return self._LINUX
-
-
 class _NamePath:
     def __init__(self, name, path, authors=None):
         self.name = name
@@ -100,15 +19,15 @@ class Books:
     SPLIT_MARK = '__'
     TEXT_WRAP = 70
 
-    def __init__(self, directory, config):
+    XDG_OPEN = 'xdg-open'
+    WSL_OPEN = 'wsl-open'
+
+    def __init__(self, directory):
         self.directory = directory
         self.key = self.parse_key()
         self.search_term = self.parse_search_term()
 
         self._max_key = self._max_num = 0
-
-        self.XDG_OPEN = config.XDG_OPEN
-        self.WSL_OPEN = config.WSL_OPEN
 
     def __str__(self):
         return 'books'
@@ -239,7 +158,7 @@ class Books:
                 elif val in _dict:
                     return val
             except KeyboardInterrupt:
-                    sys.exit(0)
+                sys.exit(0)
 
     def key_not_found(self):
         _str = self.__str__()
@@ -252,6 +171,12 @@ class Books:
         print(_msg)
 
     def _open(self, _file):
+        def on_wsl():
+            return "microsoft" in uname()[3].lower()
+
+        def on_windows():
+            return os.name == 'nt'
+
         if on_wsl():
             if shutil.which(self.WSL_OPEN) is None:
                 raise OSError(f'not found executable {self.WSL_OPEN}')
@@ -291,8 +216,8 @@ class Books:
 
 
 class Rtfm(Books):
-    def __init__(self, directory, open_pdf_settings):
-        super().__init__(directory, open_pdf_settings)
+    def __init__(self, directory):
+        super().__init__(directory)
         self.search_term = self.key
 
     def __str__(self):
@@ -348,7 +273,5 @@ class Notes(Rtfm):
 
 
 if __name__ == '__main__':
-    config = Config()
-    Books(config.books_dir, config).run()
-    # Books(config.papers_dir, config).run()
-    # Rtfm(config.rtfm_dir, config).run()
+    root = Path().home() / 'Documents' / 'books'
+    Books(root).run()
