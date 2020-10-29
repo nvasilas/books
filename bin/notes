@@ -1,0 +1,4 @@
+#!/usr/bin/env python3
+
+from books import Notes, Path
+Notes(Path().home() / 'Documents' / 'notes').run()

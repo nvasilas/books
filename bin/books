@@ -1,0 +1,4 @@
+#!/usr/bin/env python3
+
+from books import Books, Path
+Books(Path().home() / 'Documents' / 'books').run()
